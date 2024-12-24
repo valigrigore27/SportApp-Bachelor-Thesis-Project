@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/training1.css">
+    <link rel="stylesheet" href="/css/global-styles1.css">
+    <link rel="stylesheet" th:href="@{/files/MarkerCluster.css}">
+    <link rel="stylesheet" th:href="@{/files/MarkerCluster.Default.css}">
+    <link rel="stylesheet" th:href="@{https://unpkg.com/leaflet/dist/leaflet.css}">
+    <link rel="stylesheet" th:href="@{https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css}" />
+    <title>Training1 Page</title>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">ValiSportApp</div>
+        <div class="navbar-links">
+            <a href="/user/index">Home</a>
+            <a href="/training1">Training</a>
+            <a href="/food1">Food</a>
+            <a href="/maps1">Maps</a>
+            <a href="/friends1">Friends</a>
+            <a href="/dashboard1">Dashboard</a>
+        </div>
+        <div class="user-info">
+            <span><span th:text="${username}"></span> (ID: <span th:text="${userId}"></span>)</span>
+        </div>
+        <a class="logout-button" href="/logout">Logout</a>
+    </nav>
+</header>
+<main>
+    <section th:if="${flag == 0}" id="timetable-1731">
+        <div class="cs-container">
+            <div class="cs-content">
+                <div class="cs-flex-group">
+                    <span class="cs-topper">Exercises</span>
+                    <h2 class="cs-title">Build your best body</h2>
+                </div>
+                <a class="cs-button-solid">
+                    <span>Filter</span>
+                    <img src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Icons/black-upper-right-arrow.svg"
+                         alt="arrow" loading="lazy" decoding="async" height="28" width="28">
+                </a>
+            </div>
+            <!--  Tabelul mare-->
+            <!--    tre sa adaug filtre la tabel ca sa pot gasi mai repede un exercitiu-->
+            <div th:if="${flag == 0}" class="table-container">
+                <div class="scrollable">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>BodyPart</th>
+                            <th>Equipment</th>
+                            <th>Rating</th>
+                            <th>Add to Dashboard</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="ex : ${all_exercises}">
+                            <td th:text="${ex['ID']}"></td>
+                            <td th:text="${ex['Title']}"></td>
+                            <td th:text="${ex['BodyPart']}"></td>
+                            <td th:text="${ex['Equipment']}"></td>
+                            <td th:text="${ex['Rating']}"></td>
+                            <td>
+                                <form th:action="@{/training1/get-recommendations-and-like-exercise/{exerciseId}/{exerciseTitle}(exerciseId=${ex['ID']}, exerciseTitle=${ex['Title']})}" method="get">
+                                    <button class="add-button" type="submit" th:attr="exercise-name=${ex['Title']}">Add</button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!--  Recomandarile  -->
+    <!--  Utilizez flag ca sa pot afisa doar tabelul sau doar modalul de recomandari (pe rand) -->
+    <div th:if="${recommendations != null && flag == 1}" class="alert">
+        <h2>Because you liked '<i th:text="${find_exercise_by_id['Title']}"></i>' we also recommend you :</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Body Part</th>
+                <th>Equipment</th>
+                <th>Rating</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="rec : ${recommendations}">
+                <td th:text="${rec['ID']}"></td>
+                <td th:text="${rec['Title']}"></td>
+                <td th:text="${rec['BodyPart']}"></td>
+                <td th:text="${rec['Equipment']}"></td>
+                <td th:text="${rec['Rating']}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!--    NOTIFICAREA-->
+    <div>
+        <!-- SweetAlert2 CSS (CDN online) -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+        <!-- SweetAlert2 JS (CDN online) -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Selectăm toate butoanele "Add"
+                const addButtons = document.querySelectorAll('.add-button');
+
+                // Adăugăm un event listener pentru fiecare buton
+                addButtons.forEach(button => {
+                    button.addEventListener('click', function(event) {
+                        event.preventDefault(); // Previne comportamentul implicit al formularului
+
+                        const exercise = this.getAttribute('exercise-name'); // Obținem numele exercițiului
+                        const form = this.closest('form'); // Găsim formularul asociat
+
+                        // Afișăm notificarea SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Congratulation!',
+                            text: `You successfully added "${exercise}" to your dashboard`, // Mesaj personalizat cu numele exercițiului
+                            timer: 4000, // Timpul de afișare (4 secunde)
+                            showConfirmButton: false,
+                            position: 'top',
+                            toast: false,
+                            customClass: {
+                                popup: 'swal-custom-popup'
+                            },
+                            willOpen: () => {
+                                const popup = Swal.getPopup();
+                                popup.style.width = '500px';
+                                popup.style.fontSize = '20px';
+                                popup.style.textAlign = 'center';
+                            }
+                        }).then(() => {
+                            // După închiderea notificării, trimitem formularul
+                            form.submit();
+                        });
+                    });
+                });
+            });
+        </script>
+    </div>
+</main>
+</body>
+<footer>
+    &copy; 2024 Sport Application
+</footer>
+</html>

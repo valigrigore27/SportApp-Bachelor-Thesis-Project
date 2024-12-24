@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/dashboard1.css">
+    <link rel="stylesheet" href="/css/global-styles1.css">
+    <link rel="stylesheet" th:href="@{/files/MarkerCluster.css}">
+    <link rel="stylesheet" th:href="@{/files/MarkerCluster.Default.css}">
+    <link rel="stylesheet" th:href="@{https://unpkg.com/leaflet/dist/leaflet.css}">
+    <link rel="stylesheet" th:href="@{https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css}" />
+    <title>Dashboard1 Page</title>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">ValiSportApp</div>
+        <div class="navbar-links">
+            <a href="/user/index">Home</a>
+            <a href="/training1">Training</a>
+            <a href="/food1">Food</a>
+            <a href="/maps1">Maps</a>
+            <a href="/friends1">Friends</a>
+            <a href="/dashboard1">Dashboard</a>
+        </div>
+        <div class="user-info">
+            <span><span th:text="${username}"></span> (ID: <span th:text="${userId}"></span>)</span>
+        </div>
+        <a class="logout-button" href="/logout">Logout</a>
+    </nav>
+</header>
+
+<main>
+
+    <section th:if="${flag == 0}" id="pricing-1790">
+        <div class="cs-container">
+            <div class="cs-content">
+                <div class="cs-flex">
+                    <span class="cs-topper">Dashboard</span>
+                    <h2 class="cs-title">See the exercises, recipes and venues chosen</h2>
+                </div>
+            </div>
+                <ul class="cs-card-group">
+                    <li class="cs-item">
+                        <span class="cs-package">TRAIN</span>
+                        <div class="cs-flex-wrapper">
+                            <span class="cs-price">Exercises</span>
+                        </div>
+                        <img src="/images/exercises3.png" alt="Logo ACPFBA">
+                        <form th:action="@{/dashboard1/my-exercises}" method="get">
+                            <button class="cs-button-solid cs-price-button">SELECT</button>
+                        </form>
+                    </li>
+
+                    <li class="cs-item cs-popular">
+                        <span class="cs-package">COOK</span>
+                        <div class="cs-flex-wrapper">
+                            <span class="cs-price">Recipes</span>
+                        </div>
+                        <img src="/images/recipes3.png" alt="Logo ACPFBA">
+                        <form th:action="@{/dashboard1/my-recipes}" method="get">
+                            <button class="cs-button-solid cs-price-button">SELECT</button>
+                        </form>
+                    </li>
+
+                    <li class="cs-item">
+                        <span class="cs-package">GO THERE</span>
+                        <div class="cs-flex-wrapper">
+                            <span class="cs-price">Venues</span>
+                        </div>                        <img src="/images/venues3.png" alt="Logo ACPFBA">
+                        <form th:action="@{/dashboard1/my-venues}" method="get">
+                            <button class="cs-button-solid cs-price-button">SELECT</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        <!-- SVG Graphic -->
+        <img class="cs-graphic cs-light" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/white-texture.svg" alt="graphic" height="1920" width="483" loading="lazy" decoding="async" aria-hidden="true">
+        <!--Dark mode graphic, download and save locally, then open the file in your code editor and change the fill color to match the background color of the section below it on dark mode-->
+        <img class="cs-graphic cs-dark" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/dark-spatter.svg" alt="graphic" height="1920" width="483" loading="lazy" decoding="async" aria-hidden="true">
+    </section>
+
+    <div th:if="${flag == 1}">
+        <ul>
+            <li th:each="exercise : ${my_exercises}">
+                <span th:text="${exercise}"></span>
+            </li>
+        </ul>
+    </div>
+
+    <div th:if="${flag == 2}">
+        <ul>
+            <li th:each="recipe : ${my_recipes}">
+                <span th:text="${recipe}"></span>
+            </li>
+        </ul>
+    </div>
+
+    <div th:if="${flag == 3}">
+        <ul>
+            <li th:each="venue : ${my_venues}">
+                <span th:text="${venue}"></span>
+            </li>
+        </ul>
+    </div>
+</main>
+
+
+
+</body>
+<footer>
+    &copy; 2024 Sport Application
+</footer>
+</html>

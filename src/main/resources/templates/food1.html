@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/food1.css">
+    <link rel="stylesheet" href="/css/global-styles1.css">
+    <title>Food1 Page</title>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">ValiSportApp</div>
+        <div class="navbar-links">
+            <a href="/user/index">Home</a>
+            <a href="/training1">Training</a>
+            <a href="/food1">Food</a>
+            <a href="/maps1">Maps</a>
+            <a href="/friends1">Friends</a>
+            <a href="/dashboard1">Dashboard</a>
+        </div>
+        <div class="user-info">
+            <span><span th:text="${username}"></span> (ID: <span th:text="${userId}"></span>)</span>
+        </div>
+        <a class="logout-button" href="/logout">Logout</a>
+    </nav>
+</header>
+<main>
+    <section id="reviews-1739">
+        <div class="cs-container">
+            <div class="cs-form-group">
+                <div class="cs-content">
+                    <span class="cs-topper">Recipes</span>
+                    <h2 class="cs-title">What do you have in fridge?</h2>
+                </div>
+                <!-- Formular -->
+                <form class="cs-form" id="cs-form-1739" name="Search Form" method="get" action="/food1">
+                    <label class="cs-label">
+                        Your ingredients
+                        <input class="cs-input" type="text" name="q" placeholder="Search for recipes..." required>
+                    </label>
+                    <button class="cs-button-solid cs-submit" type="submit">Search</button>
+                </form>
+            </div>
+
+            <h1 th:if="${flag == 0}">Results for: <span th:text="${q}"></span></h1>
+            <ul class="cs-card-group">
+                <li th:each="hit : ${hits}" class="cs-item">
+                    <picture  class="cs-picture">
+                        <!--Mobile Image-->
+                        <source media="(max-width: 600px)" th:src="${hit.recipe.image}">
+                        <!--Tablet and above Image-->
+                        <source media="(min-width: 601px)" th:src="${hit.recipe.image}">
+                        <img loading="lazy" decoding="async" th:src="${hit.recipe.image}" alt="person" width="240" height="300">
+                    </picture>
+                    <div class="cs-info">
+                        <div class="cs-review">
+                            <span th:text="${hit.recipe.label}" class="cs-name"></span>
+                            <div class="cs-flex">
+                                <a th:href="${hit.recipe.url}" class="cs-desc">Recipe Link</a>
+                                <img class="cs-stars" aria-hidden="true" loading="lazy" decoding="async" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/yellow-stars.svg"
+                                     alt="stars" width="96" height="16">
+                            </div>
+                            <ul class="cs-item-text">
+                                <li th:if="${#lists.size(hit.recipe.ingredients) > 0}" th:text="${hit.recipe.ingredients[0].text}"></li>
+                                <li th:if="${#lists.size(hit.recipe.ingredients) > 1}" th:text="${hit.recipe.ingredients[1].text}"></li>
+                                <li th:if="${#lists.size(hit.recipe.ingredients) > 2}" th:text="${hit.recipe.ingredients[2].text}"></li>
+                            </ul>
+                                    <!-- Aici sa ma duca pe o pagina doar cu reteta respectiva unde sunt toate informatiile
+                                    despre ea si pot trimite unui prieten ce ingrediente imi lipsesc mie-->
+                            <p> <a href="/food-details1">find more...</a></p>
+                            <form th:action="@{/food1/{label}(label=${hit.recipe.label})}" method="get">
+                                <!--data-label asta de aici va fi folosit in notificare-->
+                                <button class="add-button" type="submit" th:attr="data-label=${hit.recipe.label}">Add</button>
+                            </form>
+                        </div>
+                        <div class="cs-boxes">
+                            <div class="cs-box cs-box-light">
+                            <span class="cs-weight">
+                                <img class="cs-arrow" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Icons/gym-arrow-up.svg" alt="arrow up" height="36" width="36" loading="lazy" decoding="async">
+                                    <span th:text="${T(java.lang.Math).floor(hit.recipe.calories)}"></span>
+                            </span>
+                                <span class="cs-tagline">calories</span>
+                            </div>
+                            <div class="cs-box cs-box-dark">
+                            <span class="cs-weight">
+                                <img class="cs-arrow" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Icons/gym-arrow-down.svg" alt="arrow down" height="36" width="36" loading="lazy" decoding="async">
+                                <span th:text="${hit.recipe.yield}"></span>
+                            </span>
+                                <span class="cs-tagline">yield</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <picture class="cs-background">
+            <!--Mobile Image-->
+            <source media="(max-width: 600px)" srcset="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/gym-texture.png">
+            <!--Tablet and above Image-->
+            <source media="(min-width: 601px)" srcset="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/gym-texture.png">
+            <img class="cs-background" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/gym-texture.png" alt="background" height="1920" width="1080" loading="lazy" decoding="async">
+        </picture>
+    </section>
+
+</main>
+
+<!--    NOTIFICAREA-->
+<div>
+    <!-- SweetAlert2 CSS (CDN online) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS (CDN online) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Selectăm toate butoanele "Add"
+            const addButtons = document.querySelectorAll('.add-button');
+
+            // Adăugăm un event listener pentru fiecare buton
+            addButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault(); // Previne comportamentul implicit al formularului
+
+                    const label = this.getAttribute('data-label'); // Obținem numele rețetei
+                    const form = this.closest('form'); // Găsim formularul asociat
+
+                    // Afișăm notificarea SweetAlert2
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Congratulation!',
+                        text: `You successfully added "${label}" to your dashboard`, // Mesaj personalizat cu numele rețetei
+                        timer: 4000, // Timpul de afișare (4 secunde)
+                        showConfirmButton: false,
+                        position: 'top',
+                        toast: false,
+                        customClass: {
+                            popup: 'swal-custom-popup'
+                        },
+                        willOpen: () => {
+                            const popup = Swal.getPopup();
+                            popup.style.width = '500px';
+                            popup.style.fontSize = '20px';
+                            popup.style.textAlign = 'center';
+                        }
+                    }).then(() => {
+                        // După închiderea notificării, trimitem formularul
+                        form.submit();
+                    });
+                });
+            });
+        });
+    </script>
+
+</div>
+
+</body>
+<footer>
+    &copy; 2024 Sport Application
+</footer>
+</html>

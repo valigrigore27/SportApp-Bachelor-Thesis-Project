@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/friends1.css">
+    <link rel="stylesheet" href="/css/global-styles1.css">
+    <title>Friends1 Page</title>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">ValiSportApp</div>
+        <div class="navbar-links">
+            <a href="/user/index">Home</a>
+            <a href="/training1">Training</a>
+            <a href="/food1">Food</a>
+            <a href="/maps1">Maps</a>
+            <a href="/friends1">Friends</a>
+            <a href="/dashboard1">Dashboard</a>
+        </div>
+        <div class="user-info">
+            <span><span th:text="${username}"></span> (ID: <span th:text="${userId}"></span>)</span>
+        </div>
+        <a class="logout-button" href="/logout">Logout</a>
+    </nav>
+</header>
+<main>
+    <!--pagina principala cu vizualizare profiluri-->
+    <section  id="faq-1741">
+        <div class="cs-container">
+            <div class="cs-content">
+                <span class="cs-topper">Friends</span>
+                <h2 class="cs-title">Organize your training or meals together</h2>
+            </div>
+            <div class="cs-flex-group">
+                <ul class="cs-faq-group">
+                    <li class="cs-faq-item">
+                        <form th:action="@{/friends1/my_friends}" method="get">
+                            <button id="my-friends-button" class="cs-button">
+                                <span class="cs-button-text">
+                                    My Friends
+                                </span>
+                            </button>
+                        </form>
+                    </li>
+
+                    <li class="cs-faq-item">
+                        <form th:action="@{/friends1/maybe_you_know_them}" method="get">
+                            <button id="maybe-you-know-them-button" class="cs-button">
+                                <span class="cs-button-text">
+                                    Maybe you know them
+                                </span>
+                            </button>
+                        </form>
+
+                    </li>
+                    <li class="cs-faq-item">
+                        <form th:action="@{/friends1/my_pending_friends}" method="get">
+                            <button id="my-pending-friends" class="cs-button">
+                                <span class="cs-button-text">
+                                    My pending friends
+                                </span>
+                            </button>
+                        </form>
+
+                    </li>
+
+                    <li class="cs-faq-item">
+                        <form th:action="@{/friends1/my_friend_requests}" method="get">
+                            <button id="my-friend-requests" class="cs-button">
+                                <span class="cs-button-text">
+                                    My friend requests
+                                </span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div  class="cs-gallery">
+            <div th:if="${flag == 1}" th:each="friend : ${allMyFriends}">
+                <!--Picture 1-->
+                <picture class="cs-picture">
+                    <source media="(max-width: 600px)" src="/images/user.png">
+                    <source media="(min-width: 601px)" src="/images/user.png">
+                    <img loading="lazy" decoding="async" src="/images/user.png" alt="gallery" width="272" height="320">
+                </picture>
+                <h2 th:text="${friend.username}" class="card-title"></h2>
+                <form th:action="@{/friends1/get-conversation/{userId2}(userId2=${friend.id})}" method="get">
+                    <button class="card-button" type="submit">Conversation</button>
+                </form>
+            </div>
+
+            <div th:if="${flag == 2}" th:each="user : ${notMyFriends}">
+                <!--Picture 1-->
+                <picture class="cs-picture">
+                    <source media="(max-width: 600px)" src="/images/user.png">
+                    <source media="(min-width: 601px)" src="/images/user.png">
+                    <img loading="lazy" decoding="async" src="/images/user.png" alt="gallery" width="272" height="320">
+                </picture>
+                <h2 th:text="${user.username}" class="card-title"></h2>
+                <form th:action="@{/friends1/send-friend-request/{userId2}(userId2=${user.id})}" method="post">
+                    <button class="card-button" type="submit">Add</button>
+                </form>
+            </div>
+
+            <div th:if="${flag == 3}" th:each="pendingFriend : ${allMyPendingFriends}">
+                <!--Picture 1-->
+                <picture class="cs-picture">
+                    <source media="(max-width: 600px)" src="/images/user.png">
+                    <source media="(min-width: 601px)" src="/images/user.png">
+                    <img loading="lazy" decoding="async" src="/images/user.png" alt="gallery" width="272" height="320">
+                </picture>
+                <h2 th:text="${pendingFriend.username}" class="card-title"></h2>
+                <form th:action="@{/friends1/delete-request/{userId2}(userId2=${pendingFriend.id})}" method="post">
+                    <input type="hidden" name="_method" value="delete">
+                    <button class="card-button" type="submit">Delete</button>
+                </form>
+            </div>
+
+            <div th:if="${flag == 4}" th:each="request : ${myFriendRequests}">
+                <!--Picture 1-->
+                <picture class="cs-picture">
+                    <source media="(max-width: 600px)" src="/images/user.png">
+                    <source media="(min-width: 601px)" src="/images/user.png">
+                    <img loading="lazy" decoding="async" src="/images/user.png" alt="gallery" width="272" height="320">
+                </picture>
+                <h2 th:text="${request.username}" class="card-title"></h2>
+                <form th:action="@{friends/accept-friend-request/{userId2}(userId2=${request.id})}" method="post">
+                    <button class="card-button" type="submit">Confirm</button>
+                </form>
+            </div>
+
+        </div>
+    </section>
+    <!--pagina mesaje-->
+    <section th:if="${flag == 5}">
+        <div th:if="${username1 != username2}">
+            <h1> Your conversation with <span th:text="${username2}"></span> :</h1>
+        </div>
+        <form  th:action="@{send-message/{userId2}(userId2=${userId2})}" method="post">
+            <input type="text" name="content" placeholder="Write a message..." required>
+            <button type="submit">Send</button>
+        </form>
+
+        <!-- Lista mesajelor combinate -->
+        <div>
+            <ul>
+                <li th:each="message : ${fullConversation}">
+                    <small th:text="${message.sender.username} + ':'"></small>
+                    <span th:text="${message.content}"></span>
+                    <small th:text="${#temporals.format(message.time, 'yyyy-MM-dd HH:mm:ss')}"></small>
+                </li>
+            </ul>
+        </div>
+
+        <!--    &lt;!&ndash; Lista de mesaje de la user2&ndash;&gt;-->
+        <!--    <div>-->
+        <!--        <ul>-->
+        <!--            <li th:each="message : ${conversation1}">-->
+        <!--                <span th:text="${message.content}"></span>-->
+        <!--                <small th:text="${message.time}"></small>-->
+        <!--            </li>-->
+        <!--        </ul>-->
+        <!--    </div> -->
+        <!--    -->
+        <!--    &lt;!&ndash; Lista de mesaje de la user1&ndash;&gt;-->
+        <!--    <div>-->
+        <!--        <ul>-->
+        <!--            <li th:each="message : ${conversation2}">-->
+        <!--                <span th:text="${message.content}"></span>-->
+        <!--                <small th:text="${message.time}"></small>-->
+        <!--            </li>-->
+        <!--        </ul>-->
+        <!--    </div>-->
+
+    </section>
+
+</main>
+</body>
+<script>
+<!--vreau ca butonul respectiv sa ramana activ dupa ce sunt directionat catre o pagina din alea 4-->
+</script>
+
+<footer>
+    &copy; 2024 Sport Application
+</footer>
+</html>
