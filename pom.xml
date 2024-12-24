@@ -61,27 +61,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- ASTA E PENTRU AUTENTIFICARE CU GITHUB-->
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-oauth2-client</artifactId>-->
-<!--&lt;!&ndash;			AM AFLAT CA spring-boot-starter-oauth2-client-->
-<!--				AR AVEA IN SUBARBORE O DEPENDENTA TRANZITIVA VULNERABILA SI ANUME nimbus-jose-jwt, ASA CA AM EXCLUS-O-->
-<!--				SI AM ADAUGAT O MANUAL CA ULTIMA VERSIUNE &ndash;&gt;-->
-<!--&lt;!&ndash;			<exclusions>&ndash;&gt;-->
-<!--&lt;!&ndash;				<exclusion>&ndash;&gt;-->
-<!--&lt;!&ndash;					<groupId>com.nimbusds</groupId>&ndash;&gt;-->
-<!--&lt;!&ndash;					<artifactId>nimbus-jose-jwt</artifactId>&ndash;&gt;-->
-<!--&lt;!&ndash;				</exclusion>&ndash;&gt;-->
-<!--&lt;!&ndash;			</exclusions>&ndash;&gt;-->
-<!--		</dependency>-->
 
-		<!-- versiunea corecta -->
-<!--		<dependency>-->
-<!--			<groupId>com.nimbusds</groupId>-->
-<!--			<artifactId>nimbus-jose-jwt</artifactId>-->
-<!--			<version>9.37.2</version>-->
-<!--		</dependency>-->
 <!--          		PENTRU A AVEA PARTEA DE LOGIN-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
