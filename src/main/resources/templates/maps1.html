@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/maps1.css">
+    <link rel="stylesheet" href="/css/global-styles1.css">
+    <link rel="stylesheet" th:href="@{/files/MarkerCluster.css}">
+    <link rel="stylesheet" th:href="@{/files/MarkerCluster.Default.css}">
+    <link rel="stylesheet" th:href="@{https://unpkg.com/leaflet/dist/leaflet.css}">
+    <link rel="stylesheet" th:href="@{https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css}" />
+    <title>Maps1 Page</title>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">ValiSportApp</div>
+        <div class="navbar-links">
+            <a href="/user/index">Home</a>
+            <a href="/training1">Training</a>
+            <a href="/food1">Food</a>
+            <a href="/maps1">Maps</a>
+            <a href="/friends1">Friends</a>
+            <a href="/dashboard1">Dashboard</a>
+        </div>
+        <div class="user-info">
+            <span><span th:text="${username}"></span> (ID: <span th:text="${userId}"></span>)</span>
+        </div>
+        <a class="logout-button" href="/logout">Logout</a>
+    </nav>
+</header>
+<main>
+    <section id="contact-1750">
+        <div class="cs-container">
+            <div class="cs-form-group">
+                <div class="cs-content">
+                    <span class="cs-topper">GET THERE</span>
+                    <h2 class="cs-title">Find the best location for your fav sport in Iași</h2>
+                </div>
+                <!--Form-->
+                <form th:action="@{/maps1/search-by-name}" class="cs-form" id="cs-form-1750" name="Contact Form" method="get">
+                    <label class="cs-label">
+                        Location Name
+                        <input class="cs-input" type="text" name="sportVenueName" placeholder="Search for a location.." required="">
+                    </label>
+                    <button class="cs-button-solid cs-submit" type="submit">Search</button>
+                </form>
+
+            </div>
+            <!--Contact Info-->
+            <div th:each="loc: ${locatii}" class="cs-info-group">
+                <div class="cs-info">
+                    <span class="cs-topper">Id</span>
+                    <span th:text="${loc.id}" class="cs-detail"></span>
+                </div>
+                <div class="cs-info">
+                    <span class="cs-topper">Name</span>
+                    <span th:text="${loc.sportVenueName}" class="cs-detail"></span>
+                </div>
+                <div class="cs-info">
+                    <span class="cs-topper">Type</span>
+                    <span th:text="${loc.type}" class="cs-detail"></span>
+                </div>
+                <div class="cs-info">
+                    <span class="cs-topper">Adress</span>
+                    <span th:text="${loc.location}" class="cs-detail"></span>
+                </div>
+                <div class="cs-info">
+                    <span class="cs-topper">Phone</span>
+                    <span th:text="${loc.phone}" class="cs-detail"></span>
+                </div>
+<!--                De implementat functionalitatea-->
+                <form th:action="@{/maps1/like-a-venue/{sportVenueName}(sportVenueName = ${loc.sportVenueName})}" method="get">
+                    <!--                            location-name asta de aici va fi folosit in notificare-->
+                    <button class="add-button" type="submit" th:attr="location-name=${loc.sportVenueName}">Add</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="cs-picture-group">
+            <!--Replace with your iframe for your google business profile-->
+            <div id="map" style="height: 100%; width: 100%; margin: 20px auto;"></div>
+        </div>
+
+    </section>
+
+    <!--SCRIPTURI HARTA-->
+    <script th:src="@{https://unpkg.com/leaflet/dist/leaflet.js}"></script>
+    <script th:src="@{/files/leaflet.markercluster.js}"></script>
+    <script th:src="@{https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js}"></script>
+    <!--asta ca sa imi centreze pe Iasi implicit-->
+    <script>
+        // Inițializare hartă
+        var map = L.map('map').setView([47.1585, 27.6014], 13); // Centrăm harta pe Iași
+        L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Adăugarea controlului de geocodare
+        var geocoder = L.Control.geocoder().addTo(map);
+
+    </script>
+
+    <!--    NOTIFICAREA-->
+    <div>
+        <!-- SweetAlert2 CSS (CDN online) -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+        <!-- SweetAlert2 JS (CDN online) -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // toate butoanele "Add"
+                const addButtons = document.querySelectorAll('.add-button');
+
+                // fac pentru fiecare buton
+                addButtons.forEach(button => {
+                    button.addEventListener('click', function(event) {
+                        event.preventDefault(); // previne comportamentul implicit al formularului
+
+                        const location = this.getAttribute('location-name'); // iau numele locatiei
+                        const form = this.closest('form'); //gasesc formularul asociat
+
+                        //  notificarea
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Congratulation!',
+                            text: `You successfully added "${location}" to your dashboard`,
+                            timer: 4000, // (4 secunde)
+                            showConfirmButton: false,
+                            position: 'top',
+                            toast: false,
+                            customClass: {
+                                popup: 'swal-custom-popup'
+                            },
+                            willOpen: () => {
+                                const popup = Swal.getPopup();
+                                popup.style.width = '500px';
+                                popup.style.fontSize = '20px';
+                                popup.style.textAlign = 'center';
+                            }
+                        }).then(() => {
+                            //trimitem formularul
+                            form.submit();
+                        });
+                    });
+                });
+            });
+        </script>
+    </div>
+</main>
+</body>
+<footer>
+    &copy; 2024 Sport Application
+</footer>
+</html>
